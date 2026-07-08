@@ -6,7 +6,7 @@ const { regions } = Astro.props;
 ---
 
 <section
-  class="border border-amber-900/60 w-[400px] h-[300px] bg-gray-700 rounded-lg flex flex-col justify-center items-center"
+  class="border border-amber-900/60 w-100 h-75 bg-gray-700 rounded-lg flex flex-col justify-center items-center text-white"
 >
   <header class="rounded-t-lg bg-gray-800 w-full">
     <h3 class="font-bold text-xl text-center py-4">Selecciona tu región</h3>
@@ -21,7 +21,9 @@ const { regions } = Astro.props;
       name="regions"
       id="regions"
     >
-      <option selected="true" disabled="true">Selecciona</option>
+      <option class="text-black" selected="true" disabled="true"
+        >Selecciona</option
+      >
       {
         Object.entries(regions).map(([key, value]) => (
           <option value={key}>{value}</option>
@@ -31,32 +33,31 @@ const { regions } = Astro.props;
   </div>
   <hr class="border border-white/50 w-full" />
   <footer class="my-4">
-    <a
-      id="anchorRegions"
-      class="border border-white/15 hover:border-white/30 py-2 px-4 rounded bg-transparent"
+    <button
+      id="btnRegions"
+      disabled
+      class="border border-white/15 hover:border-white/30 py-2 px-4 rounded bg-transparent transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
     >
       Continuar
-    </a>
+    </button>
   </footer>
 </section>
-<script type="module">
-  let $anchor = document.getElementById("anchorRegions");
-  let $select = document.getElementById("regions");
+<script>
+  import { navigate } from "astro:transitions/client";
 
-  $anchor.removeAttribute("href");
-  let optionValue;
+  const btn = document.getElementById("btnRegions") as HTMLButtonElement | null;
+  const select = document.getElementById("regions") as HTMLSelectElement | null;
 
-  $select.addEventListener("change", () => {
-    const selectedOption = $select.options[$select.selectedIndex];
-    optionValue = selectedOption.value;
-    $anchor.setAttribute("href", `/${optionValue}/store`);
-    $anchor.classList.remove("bg-transparent");
-    $anchor.classList.toggle("bg-white");
-    $anchor.classList.toggle("text-black");
-  });
-  if ($anchor.hasAttribute("href")) {
-    $anchor.addEventListener("click", () => {
-      $anchor.setAttribute("href", `/${optionValue}/store`);
+  if (btn && select) {
+    select.addEventListener("change", () => {
+      btn.disabled = false;
+      btn.classList.remove("bg-transparent");
+      btn.classList.add("bg-white", "text-black");
+    });
+
+    btn.addEventListener("click", () => {
+      const region = select.value;
+      if (region) navigate(`/${region}/store`);
     });
   }
 </script>
